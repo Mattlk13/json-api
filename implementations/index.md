@@ -46,13 +46,14 @@ assembled to vet them.
 isomorphic ActiveRecord clone that issues JSON:API requests instead of SQL and is part of the larger [JSONAPI Suite](https://jsonapi-suite.github.io/jsonapi_suite).
 * [jsonapi-vuex](https://github.com/mrichar1/jsonapi-vuex) A module for interacting with a jsonapi service using a Vuex store, restructuring/normalizing records to make life easier.
 * [heather-js](https://github.com/bitex-la/heather-js) A library for parsing JSONAPI into objects from ES6 classes.
-* [@reststate/client](https://client.reststate.codingitwrong.com/) - a stateless client providing easy access to standard JSON:API operations for a configured resource.
-* [@reststate/mobx](https://mobx.reststate.codingitwrong.com/) - a zero-configuration way to fetch and store JSON:API data in objects implemented with the MobX state management library, for use in React or other apps.
-* [@reststate/vuex](https://vuex.reststate.codingitwrong.com/) - a zero-configuration way to fetch and store JSON:API data in Vuex stores.
 * [@hyral/core](https://github.com/SyneticNL/Hyral) - An advanced, documented, easily extendable and lightweight (JSON:)API abstraction library with ORM-like CRUD support, automatic relationships handling and support for multiple (different) backends.
 * [@hyral/vue](https://github.com/SyneticNL/Hyral/tree/master/packages/vue) - Vue(x) integration for [@hyral/core](https://github.com/SyneticNL/Hyral) for Store-module creation and mixins
-* [jsonapi-redux-data](https://github.com/wednesday-solutions/jsonapi-redux-data) - a library that makes integration of jsonapi with react + redux effortless and easy. 
+* [jsonapi-redux-data](https://github.com/wednesday-solutions/jsonapi-redux-data) - a library that makes integration of jsonapi with react + redux effortless and easy.
 * [jsonapi-fractal](https://github.com/andersondanilo/jsonapi-fractal) JSON:API Serializer inspired by Fractal (PHP)
+* [ts-japi](https://github.com/jun-sheaf/ts-japi) - A zero-dependency, highly-modular, js/ts-friendly, recursible, framework-agnostic library for serializing data to the JSON:API specification. Serializes the entire specification.
+* [mobx-async-store](https://github.com/artemis-ag/mobx-async-store) - A Mobx-based store for async data fetching and state management for the JSON:API specification.
+* [spraypaint](https://github.com/graphiti-api/spraypaint.js) - JS Client for Graphiti similar to ActiveRecord. Written in Typescript but works in plain old ES5 as well. This library is isomorphic - use it from the browser, or from the server with NodeJS.
+* [json-api-models](https://github.com/tobyzerner/json-api-models) - A lightweight layer for working with JSON:API data.
 
 ### <a href="#client-libraries-typescript" id="client-libraries-typescript" class="headerlink"></a> Typescript
 * [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) A JSON:API library developed for AngularJS in Typescript
@@ -63,6 +64,8 @@ isomorphic ActiveRecord clone that issues JSON:API requests instead of SQL and i
 * [Grivet](https://github.com/muellerbbm-vas/grivet) A JSON:API client library written in TypeScript with emphasis on RESTful traversal of resources according to HATEOAS principles.
 * [DatX](https://github.com/infinum/datx) is an opinionated data store for use with the MobX state management library that adds JSON:API support with [datx-jsonapi](https://github.com/infinum/datx/tree/master/packages/datx-jsonapi) mixin.
 * [jsonapi-fractal](https://github.com/andersondanilo/jsonapi-fractal) JSON:API Serializer inspired by Fractal (PHP)
+* [ts-japi](https://github.com/jun-sheaf/ts-japi) - A zero-dependency, highly-modular, js/ts-friendly, recursible, framework-agnostic library for serializing data to the JSON:API specification. Serializes the entire specification.
+* [drupal-jsonapi-params](https://github.com/d34dman/drupal-jsonapi-params) A library for building query parameters when connecting with Drupal CMS's JSON:API. 
 
 ### <a href="#client-libraries-ios" id="client-libraries-ios" class="headerlink"></a> iOS
 
@@ -71,6 +74,7 @@ isomorphic ActiveRecord clone that issues JSON:API requests instead of SQL and i
 * [Vox](https://github.com/aronbalog/Vox) is a Swift JSON:API client framework with custom model classes support and nice networking interface.
 * [Japx](https://github.com/infinum/Japx) is lightweight JSON:API parser that flattens complex JSON:API structure and turns it into simple JSON and vice versa. It works by transferring Dictionary to Dictionary, so you can use Codable, Unbox, Wrap, ObjectMapper or any other object mapping tool that you prefer. It supports Objective-C as well.
 * [mattpolzin / JSONAPI](https://github.com/mattpolzin/JSONAPI) is a Swift Codable library with heavy emphasis on type-safety. It is platform agnostic so it can be used client- and server-side.
+* [IzzyParser](https://github.com/undabot/izzyparser-ios) is a lightweight library for serializing and deserializing JSON:API objects.
 
 ### <a href="#client-libraries-ruby" id="client-libraries-ruby" class="headerlink"></a> Ruby
 
@@ -82,14 +86,12 @@ isomorphic ActiveRecord clone that issues JSON:API requests instead of SQL and i
 * [SimpleJSONAPIClient](https://github.com/amcaplan/simple_jsonapi_client) gives you lower-level control for API operations, while your models and their relationships maintain a neat, ActiveRecord-inspired interface.
 * [jsonapi-simple_client](https://github.com/InspireNL/jsonapi-simple_client) a client to interact with a Server API that implements the JSON:API spec.
 * [jsonapi-record](https://github.com/InspireNL/jsonapi-record) a client framework for interacting JSON:API Spec compliant APIs in Ruby.
-* [Graphiti](https://www.graphiti.dev/guides/) a ruby library for RESTful Resources based on JSON:API. Works with vanilla Ruby, Sinatra and Rails.
 
 ### <a href="#client-libraries-php" id="client-libraries-php" class="headerlink"></a> PHP
 
 * [Art4 / json-api-client](https://github.com/Art4/json-api-client) is a library for validating and handling the response body in a simple OOP way.
 * [woohoolabs / yang](https://github.com/woohoolabs/yang) is a PSR-7 compatible library that is able to build and send requests, and handle responses.
 * [enm/json-api-client](https://eosnewmedia.github.io/JSON-API-Client/) is an abstract client-side PHP implementation of the json:api specification which is based on [enm/json-api-common](https://eosnewmedia.github.io/JSON-API-Common/). It allows you to send json:api requests via your own http client implementation or via a buzz or guzzle client.
-* [pz/doctrine-rest](https://github.com/R3VoLuT1OneR/doctrine-rest) library provides basic tools for implementation of JSON:API with Doctrine 2
 * [swisnl/json-api-client](https://github.com/swisnl/json-api-client) Is a package for mapping remote {json:api} resources to Eloquent like models and collections.
 
 ### <a href="#client-libraries-dart" id="client-libraries-dart" class="headerlink"></a> Dart
@@ -97,6 +99,7 @@ isomorphic ActiveRecord clone that issues JSON:API requests instead of SQL and i
 * [json_api](https://pub.dev/packages/json_api) is a full-fledged client for Flutter/Web/VM.
 * [rest_data](https://pub.dev/packages/rest_data) is a REST API client based on `ember-data` concepts which includes a JSON:API adapter.
 * [jsonapi_client](https://pub.dev/packages/jsonapi_client) is a simple JSON:API v1.0 client written in Dart.
+* [japx](https://pub.dev/packages/japx) is a lightweight JSON:API parser that flattens complex JSON:API structure and turns it into simple JSON and vice versa
 
 ### <a href="#client-libraries-perl" id="client-libraries-perl" class="headerlink"></a> Perl
 
@@ -152,7 +155,7 @@ and writing of JSON:API documents.
 
 ### <a href="#server-libraries-php" id="server-libraries-php" class="headerlink"></a> PHP
 
-* [tobscure / json-api](https://github.com/tobscure/json-api)
+* [tobyz / json-api-server](https://github.com/tobyzerner/json-api-server) is a framework-agnostic declarative JSON:API server implementation.
 * [neomerx / json-api](https://github.com/neomerx/json-api) is a framework agnostic library that fully implements JSON:API v1.0.
 * [limoncello-php / app](https://github.com/limoncello-php/app) is a JSON:API v1.0 quick start server application for [neomerx / json-api](https://github.com/neomerx/json-api).
 * [lode / jsonapi](https://github.com/lode/jsonapi) is a human-friendly library to implement JSON:API v1.1 without needing to know the specification.
@@ -174,6 +177,8 @@ and writing of JSON:API documents.
 * [hackerboy/json-api](https://github.com/hackerboydotcom/json-api) is a lightweight library that helps you to implement JSONAPI easily
 * [drupal](https://www.drupal.org/project/drupal) The Drupal CMS supports exposing all data it manages (entities) according to the JSON:API specification. [jsonapi_extras](https://www.drupal.org/project/jsonapi_extras) is an optional extra module to change resource type names, field names and more.
 * [bednic/json-api](https://gitlab.com/bednic/json-api) Annotation driven library for creating valid JSON API response document from your objects.
+* [pz/doctrine-rest](https://github.com/R3VoLuT1OneR/doctrine-rest) library provides basic tools for implementation of JSON:API with Doctrine 2
+* [pz/jsonapi-resource](https://github.com/R3VoLuT1OneR/jsonapi-resource) Serialize PHP class object into JSON:API resource object using PHP 8.0 Attributes.
 
 ### <a href="#server-libraries-node-js" id="server-libraries-node-js" class="headerlink"></a> Node.js
 * [Fortune.js](http://fortune.js.org/) is a library that includes a [comprehensive implementation of JSON:API](https://github.com/fortunejs/fortune-json-api).
@@ -199,6 +204,7 @@ and writing of JSON:API documents.
 * [jsonapi-mock](https://github.com/Thomas-X/jsonapi-mock) A [json-server](https://github.com/typicode/json-server) inspired jsonapi mock server. Setup a jsonapi mock server in almost no time, uses lowdb.
 * [DenaliJS](http://denalijs.org) A layered-conventions framework for building ambitious APIs. Includes a powerful addon system, best-in-class developer experience, and extensive documentation.
 * [jsonapi-fractal](https://github.com/andersondanilo/jsonapi-fractal) JSON:API Serializer inspired by Fractal (PHP)
+* [ts-japi](https://github.com/jun-sheaf/ts-japi) - A zero-dependency, highly-modular, js/ts-friendly, recursible, framework-agnostic library for serializing data to the JSON:API specification. Serializes the entire specification.
 
 ### <a href="#server-libraries-ruby" id="server-libraries-ruby" class="headerlink"></a> Ruby
 
@@ -230,6 +236,7 @@ the moment.
     handling, includes, sparse fields, pagination, filtering (using `ransack`)
     and sorting. Strives to implement as much of the JSONAPI spec as possible.
     Small codebase (~500 sloc), good documentation and test coverage.
+  * [Graphiti](https://www.graphiti.dev/guides/) a ruby library for RESTful Resources based on JSON:API. Works with vanilla Ruby, Sinatra and Rails.
 
 * Sinatra
   * [Sinja](https://github.com/mwpastore/sinja) extends [Sinatra](http://www.sinatrarb.com) and leverages [JSONAPI::Serializers](https://github.com/fotinakis/jsonapi-serializers) to enable rapid development of comprehensive, read-and-write, and JSON:API v1.0-compliant web services using the DAL/ORM of your choice. It includes a simple role-based authorization scheme, support for client-generated IDs, patchless clients, and coalesced find requests, exception handling, and more.
@@ -250,6 +257,8 @@ the moment.
 * [Flump](https://github.com/rolepoint/flump) Database agnostic JSON:API builder which depends on Flask and Marshmallow.
 * [SAFRS JSON API Framework](https://github.com/thomaxxl/safrs) Flask-SQLAlchemy jsonapi implementation with auto-generated openapi (fka swagger) interface.
 * [pydantic-jsonapi](https://github.com/DeanWay/pydantic-jsonapi) JSON:api validation with python type hinting using [pydantic](https://pydantic-docs.helpmanual.io/)
+* [Flask-Restless-NG](https://github.com/mrevutskyi/flask-restless-ng) Builds JSON:API from SQLAlchemy models using Flask
+* [starlette-jsonapi](https://github.com/vladmunteanu/starlette-jsonapi) Microframework on top of Starlette and marshmallow-jsonapi with support for asynchronous ORMs
 
 ### <a href="#server-libraries-go" id="server-libraries-go" class="headerlink"></a> Go
 
@@ -258,14 +267,15 @@ the moment.
 * [go-json-spec-handler](https://github.com/derekdowling/go-json-spec-handler) drop-in library for handling requests and sending responses in an existing API.
 * [jsh-api](https://github.com/derekdowling/go-json-spec-handler/tree/master/jsh-api) deals with the dirty work of building JSON:API resource endpoints. Built on top of [jsh](https://github.com/derekdowling/go-json-spec-handler)
 * [mfcochauxlaberge/jsonapi](https://github.com/mfcochauxlaberge/jsonapi) offers a large set of tools to build a JSON:API compliant service.
+* [pieoneers/jsonapi-go](https://github.com/pieoneers/jsonapi-go) lightweight JSON API implementation in Go. Make your client and server applications JSON API-enabled in hours not months.
 
 ### <a href="#server-libraries-net" id="server-libraries-net" class="headerlink"></a> .NET
 
+* [JsonApiDotNetCore](https://github.com/json-api-dotnet/JsonApiDotNetCore) is a framework for building json:api compliant REST APIs using .NET Core and Entity Framework Core. It eliminates as much boilerplate as possible by offering out-of-the-box features such as sorting, filtering and pagination. You just need to focus on defining the resources and implementing your custom business logic.
 * [JsonApiNet](https://github.com/l8nite/JsonApiNet) lets you quickly deserialize JSON:API documents into C# entities. Supports compound documents, complex type mapping from attributes, attribute mapping, and more. [See the README](https://github.com/l8nite/JsonApiNet/blob/master/README.md) for full details.
 * [NJsonApi](https://github.com/jacek-gorgon/NJsonApi) is a .NET server implementation of the standard. It aims at good extensibility and performance while maintaining developer-friendliness with interchangeable conventions and builder-style configuration.
-* [Migrap.AspNetCore.Hateoas](https://github.com/migrap/Migrap.AspNetCore.Hateoas) HATEOAS (Hypermedia as the Engine of Application State) framework for ASP.NET Core. Current implementation(s): Siren, JsonApi.
+* [Migrap.AspNetCore.Hateoas](https://github.com/dcomartin/Migrap.AspNetCore.Hateoas) HATEOAS (Hypermedia as the Engine of Application State) framework for ASP.NET Core. Current implementation(s): Siren, JsonApi.
 * [Saule](https://github.com/joukevandermaas/saule/) is a small JSON:API 1.0 compatible library that integrates well with established Web API conventions. It has complete documentation and near 100% test coverage.
-* [JsonApiDotNetCore](https://github.com/json-api-dotnet/JsonApiDotNetCore) is an ASP.Net Core server implementation targeting .Net Standard. Based on the [JR](https://github.com/cerebris/jsonapi-resources) implementation, it provides all the required controllers and middleware to get your application up and running with as little boilerplate as possible.
 * [Hypermedia.JsonApi.WebApi](https://github.com/cosullivan/Hypermedia/) is a Web API media type formatter for reading and writing JSON:API. It supports an external resource model definition and natively
 includes related resources.
 * [JsonApiSerializer](https://github.com/codecutout/JsonApiSerializer) is a configurationless JSON:API serialization and deserialization library implemented as a Json.NET `JsonSerializerSetting`. It leverages the existing power and flexibility of Json.NET while providing a sensible default mapping between JSON:API and CLR objects.
@@ -278,6 +288,9 @@ includes related resources.
 * [crnk.io](http://www.crnk.io) is a JSON:API framework for clients and servers. It was started as a fork for Katharsis after the later [lost development momentum](https://www.reddit.com/r/java/comments/6hs0n8/crnkio_10_released_crank_up_rest_development/). It has similar concepts but with active development support. On the server-side it comes, among others,
   with a rich set of integrations (Servlet, JAX-RS, Spring, JPA, Bean Validation, Zipkin and more), bulk updates with JSON Patch,  a meta-model for automation purposes, client stub generation for TypeScript and a module API for third-party contributions.
 * [Elide](http://elide.io) is a web framework supporting JSON:API. Through annotation-based JSON:API endpoint generation, Elide enables you to focus on your data model, security model, and business logic while avoiding unnecessary boilerplate. Moreover, through use of the JSON:API Patch extension, [Elide](http://elide.io) provides full support for database transactions.
+* [JSON:API for Spring HATEOAS](https://github.com/toedter/spring-hateoas-jsonapi) provides serialization/deserialization of the Spring HATEOAS representation models. The project also provides a builder to easily create relationships, included resource objects, pagination, and more.
+* [jsonapi-rvp](https://github.com/xlate/jsonapi-rvp) utilizes the platform capabilities available in the Jakarta EE environment (formerly Java EE) to expose JPA entities via JSON:API. Features include query and entity validation (using Bean Validators), pagination, use of surrogate keys as record identifiers, support for LEFT outer join conditions, and a simple JavaScript client.
+* [JSON:API object converter](https://github.com/MieskeB/json-api-spring-boot) converts normal Java objects to JSON:API standard with the use of annotations in the viewmodels (dtos).
 
 ### <a href="#server-libraries-scala" id="server-libraries-scala" class="headerlink"></a> Scala
 * [scala-jsonapi](https://github.com/scala-jsonapi/scala-jsonapi) A Scala library for producing JSON output (and deserializing JSON input) based on JSON:API specification.
@@ -306,6 +319,10 @@ includes related resources.
 ### <a href="#server-libraries-dart" id="server-libraries-dart" class="headerlink"></a> Dart
 
 * [json_api_server](https://pub.dartlang.org/packages/json_api_server) is a JSON:API server running on Dart VM.
+
+### <a href="#server-libraries-crystal" id="server-libraries-crystal" class="headerlink"></a> Crystal
+
+* [jsonapi-serializer-cr](https://github.com/andersondanilo/jsonapi-serializer-cr) is a JSON:API Serializer for Crystal Lang.
 
 ## <a href="#examples" id="examples" class="headerlink"></a> Examples
 

@@ -1,13 +1,13 @@
 ---
 version: 1.1
-status: wd
+status: rc
 ---
 
 ## <a href="#introduction" id="introduction" class="headerlink"></a> Introduction
 
 JSON:API is a specification for how a client should request that resources be
 fetched or modified, and how a server should respond to those requests. JSON:API
-can also be easily extended with [profiles].
+can be easily extended with [extensions] and [profiles].
 
 JSON:API is designed to minimize both the number of requests and the amount of
 data transmitted between clients and servers. This efficiency is achieved
@@ -16,6 +16,17 @@ without compromising readability, flexibility, or discoverability.
 JSON:API requires use of the JSON:API media type
 ([`application/vnd.api+json`](http://www.iana.org/assignments/media-types/application/vnd.api+json))
 for exchanging data.
+
+## <a href="#semantics" id="semantics" class="headerlink"></a> Semantics
+
+All document members, query parameters, and processing rules defined by
+this specification are collectively called "specification semantics".
+
+Certain document members, query parameters, and processing rules are reserved
+for implementors to define at their discretion. These are called "implementation
+semantics".
+
+All other semantics are reserved for potential future use by this specification.
 
 ## <a href="#conventions" id="conventions" class="headerlink"></a> Conventions
 
@@ -27,30 +38,169 @@ document are to be interpreted as described in
 [[RFC8174](https://tools.ietf.org/html/rfc8174)]
 when, and only when, they appear in all capitals, as shown here.
 
-## <a href="#content-negotiation" id="content-negotiation" class="headerlink"></a> Content Negotiation
+## <a href="#jsonapi-media-type" id="jsonapi-media-type" class="headerlink"></a> The JSON:API Media Type
 
-### <a href="#content-negotiation-all" id="content-negotiation-all" class="headerlink"></a> Universal Responsibilities
+The JSON:API media type is
+[`application/vnd.api+json`](http://www.iana.org/assignments/media-types/application/vnd.api+json).
 
-The JSON:API media type is [`application/vnd.api+json`](http://www.iana.org/assignments/media-types/application/vnd.api+json).
-Clients and servers **MUST** send all JSON:API data using this media type in the
-`Content-Type` header.
+### <a href="#media-type-parameters" id="media-type-parameters" class="headerlink"></a> Media Type Parameters
 
-Further, the JSON:API media type **MUST** always be specified with either no
-media type parameters, the `ext` parameter, the `profile` parameter or both the
-`ext` and `profile` parameters. This applies to both the `Content-Type` and
-`Accept` headers.
-
-The `ext` parameter is used to support [extensions] and the `profile` parameter
-is used to support [profiles].
+The JSON:API specification supports two media type parameters: `ext` and
+`profile`, which are used to specify [extensions] and [profiles], respectively.
 
 > Note: A media type parameter is an extra piece of information that can
 accompany a media type. For example, in the header
 `Content-Type: text/html; charset="utf-8"`, the media type is `text/html` and
 `charset` is a parameter.
 
-> Note: These content negotiation requirements exist to allow future versions
-of this specification to add other media type parameters for extension
-negotiation and versioning.
+### <a href="#extensions" id="extensions" class="headerlink"></a> Extensions
+
+Extensions provide a means to "extend" the base specification by defining
+additional [specification semantics](#semantics).
+
+Extensions cannot alter or remove specification semantics, nor can they specify
+implementation semantics.
+
+### <a href="#profiles" id="profiles" class="headerlink"></a> Profiles
+
+Profiles provide a means to share a particular usage of the specification among
+implementations.
+
+Profiles can specify [implementation semantics](#semantics), but cannot alter,
+add to, or remove specification semantics.
+
+### <a href="#media-type-parameter-rules" id="media-type-parameter-rules" class="headerlink"></a> Rules for Media Type Parameters
+
+The JSON:API media type **MUST NOT** be specified with any media type parameters
+other than `ext` and `profile`. The `ext` parameter is used to support
+[extensions] and the `profile` parameter is used to support [profiles].
+
+Extensions and profiles are each uniquely identified by a
+[URI](https://tools.ietf.org/html/rfc3986). Visiting an extension's or a
+profile's URI **SHOULD** return documentation that describes its usage. The
+values of the `ext` and `profile` parameters **MUST** equal a space-separated
+(U+0020 SPACE, " ") list of extension or profile URIs, respectively.
+
+> Note: When serializing the `ext` or `profile` media type parameters, the HTTP
+> specification requires that parameter values be surrounded by quotation marks
+> (U+0022 QUOTATION MARK, "\"").
+
+#### <a href="#extension-rules" id="extension-rules" class="headerlink"></a> Rules for Extensions
+
+An extension **MAY** impose additional processing rules or further restrictions
+and it **MAY** define new object members as described below.
+
+An extension **MUST NOT** lessen or remove any processing rules, restrictions or
+object member requirements defined in this specification or other extensions.
+
+An extension **MAY** define new members within the document structure defined by
+this specification. The rules for extension member names are covered
+[below](#extension-members).
+
+An extension **MAY** define new query parameters. The rules for extension-defined
+query parameters are covered [below](#extension-query-parameters).
+
+When an extension defines new query parameters or document members, the
+extension **MUST** define a namespace to guarantee that extensions will never
+conflict with current or future versions of this specification. A namespace
+**MUST** meet all of the following conditions:
+
+- A namespace **MUST** contain at least one character.
+- A namespace **MUST** contain only these characters:
+  - U+0061 to U+007A, "a-z"
+  - U+0041 to U+005A, "A-Z"
+  - U+0030 to U+0039, "0-9"
+
+An extension **MUST NOT** define more than one namespace. The namespace used for
+all query parameters and document members **MUST** be the same for any given
+extension.
+
+In the following example, an extension with the namespace `version` has
+specified a resource object member `version:id` to support per-resource
+versioning. This member might appear as follows:
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json; ext="https://jsonapi.org/ext/version"
+
+// ...
+{
+  "type": "articles",
+  "id": "1",
+  "version:id": "42",
+  "attributes": {
+    "title": "Rails is Omakase"
+  }
+}
+// ...
+```
+
+#### <a href="#profile-rules" id="profile-rules" class="headerlink"></a> Rules for Profiles
+
+The rules for profile usage are dictated by [RFC
+6906](https://tools.ietf.org/html/rfc6906).
+
+A profile **MAY** define document members and processing rules that are reserved
+for implementors.
+
+A profile **MUST NOT** define any query parameters.
+
+A profile **MUST NOT** alter or remove processing rules that have been defined
+by this specification or by an [extension][extensions]. However, a profile
+**MAY** define processing rules for query parameters whose processing rules
+have been reserved for implementors to define at their discretion.
+
+For example, a profile could define rules for interpreting [the `filter` query
+parameter](#fetching-filtering), but it could not specify that relationship
+names in [the `include` query parameter](#fetching-includes) are
+space-separated instead of dot-separated.
+
+Unlike extensions, profiles do not need to define a namespace for document
+members because profiles cannot define specification semantics and thus cannot
+conflict with current or future versions of this specification. However, it is
+possible for profiles to conflict with other profiles. Therefore, it is the
+responsibility of implementors to ensure that they do not support conflicting
+profiles.
+
+In the following example, a profile has defined a `timestamps`
+[attribute][attributes]. According to the profile, the attribute must be an
+object containing a `created` member and a `modified` member and these members'
+values must use the [RFC 3339](https://tools.ietf.org/html/rfc3339) format.
+With such a profile applied, a response might appear as follows:
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json; profile="https://example.com/resource-timestamps"
+
+// ...
+{
+  "type": "articles",
+  "id": "1",
+  "attributes": {
+    "title": "Rails is Omakase",
+    "timestamps": {
+      "created": "2020-07-21T12:09:00Z",
+      "modified": "2020-07-30T10:19:01Z"
+    }
+  }
+}
+// ...
+```
+
+## <a href="#content-negotiation" id="content-negotiation" class="headerlink"></a> Content Negotiation
+
+### <a href="#content-negotiation-all" id="content-negotiation-all" class="headerlink"></a> Universal Responsibilities
+
+Clients and servers **MUST** send all JSON:API payloads using the JSON:API media
+type in the `Content-Type` header.
+
+Clients and servers **MUST** specify the `ext` media type parameter in the
+`Content-Type` header when they have applied one or more extensions to a
+JSON:API document.
+
+Clients and servers **MUST** specify the `profile` media type parameters in the
+`Content-Type` header when they have applied one or more profiles to a JSON:API
+document.
 
 ### <a href="#content-negotiation-clients" id="content-negotiation-clients" class="headerlink"></a> Client Responsibilities
 
@@ -58,19 +208,37 @@ When processing a JSON:API response document, clients **MUST** ignore any
 parameters other than `ext` and `profile` parameters in the server's
 `Content-Type` header.
 
+A client **MAY** use the `ext` media type parameter in an `Accept` header to
+require that a server apply all the specified extensions to the response
+document.
+
+A client **MAY** use the `profile` media type parameter in an `Accept` header
+to request that the server apply one or more profiles to the response document.
+
+> Note: A client is allowed to send more than one acceptable media type in the
+`Accept` header, including multiple instances of the JSON:API media type. This
+allows clients to request different combinations of the `ext` and `profile`
+media type parameters. A client can use [quality values](https://tools.ietf.org/html/rfc7231#section-5.3.2)
+to indicate that some combinations are less preferable than others. Media types
+specified without a qvalue are equally preferable to each other, regardless of
+their order, and are always considered more preferable than a media type with a
+qvalue less than 1.
+
 ### <a href="#content-negotiation-servers" id="content-negotiation-servers" class="headerlink"></a> Server Responsibilities
 
 If a request specifies the `Content-Type` header with the JSON:API media type,
 servers **MUST** respond with a `415 Unsupported Media Type` status code if
 that media type contains any media type parameters other than `ext` or
-`profile`. If a request specifies the `Content-Type` header with an instance of
+`profile`.
+
+If a request specifies the `Content-Type` header with an instance of
 the JSON:API media type modified by the `ext` media type parameter and that
 parameter contains an unsupported extension URI, the server **MUST** respond
 with a `415 Unsupported Media Type` status code.
 
-> Note: Older JSON:API servers that do not support the `ext` or `profile` media
-  type parameters will respond with a `415 Unsupported Media Type` client error
-  status if the `ext` or `profile` media type parameter is present.
+> Note: JSON:API servers that do not support version 1.1 of this specification
+  will respond with a `415 Unsupported Media Type` client error if the `ext` or
+  `profile` media type parameter is present.
 
 If a request's `Accept` header contains an instance of the JSON:API media type,
 servers **MUST** respond with a `406 Not Acceptable` status code if all
@@ -79,9 +247,17 @@ than `ext` or `profile`. If every instance of that media type is modified by the
 `ext` parameter and each contains at least one unsupported extension URI, the
 server **MUST** also respond with a `406 Not Acceptable`.
 
-Servers that support profiles **SHOULD** specify the `Vary` header with
-`Accept` as one of its values. This applies to responses with and without any
-profiles applied.
+If the `profile` parameter is received, a server **SHOULD** attempt to apply any
+requested profile(s) to its response. A server **MUST** ignore any profiles
+that it does not recognize.
+
+> Note: The above rules guarantee strict agreement on extensions between the
+  client and server, while the application of profiles is left to the discretion
+  of the server.
+
+Servers that support the `ext` or `profile` media type parameters **SHOULD**
+specify the `Vary` header with `Accept` as one of its values. This applies to
+responses with and without any [profiles] or [extensions] applied.
 
 > Note: Some HTTP intermediaries (e.g. CDNs) may ignore the `Vary` header
 unless specifically configured to respect it.
@@ -89,17 +265,20 @@ unless specifically configured to respect it.
 ## <a href="#document-structure" id="document-structure" class="headerlink"></a> Document Structure
 
 This section describes the structure of a JSON:API document, which is identified
-by the media type [`application/vnd.api+json`](http://www.iana.org/assignments/media-types/application/vnd.api+json).
-JSON:API documents are defined in JavaScript Object Notation (JSON)
-[[RFC8259](http://tools.ietf.org/html/rfc8259)].
+by the [JSON:API media type](#content-negotiation-all). JSON:API documents are
+defined in JavaScript Object Notation (JSON) [[RFC8259](http://tools.ietf.org/html/rfc8259)].
 
 Although the same media type is used for both request and response documents,
 certain aspects are only applicable to one or the other. These differences are
 called out below.
 
-Unless otherwise noted, objects defined by this specification **MUST NOT**
-contain any additional members. Client and server implementations **MUST**
-ignore members not recognized by this specification.
+Extensions **MAY** define new members within the document structure. These
+members **MUST** comply with the naming requirements specified
+[below](#extension-members).
+
+Unless otherwise noted, objects defined by this specification or any applied
+extensions **MUST NOT** contain any additional members. Client and server
+implementations **MUST** ignore non-compliant members.
 
 > Note: These conditions allow this specification to evolve through additive
 changes.
@@ -107,7 +286,7 @@ changes.
 ### <a href="#document-top-level" id="document-top-level" class="headerlink"></a> Top Level
 
 A JSON object **MUST** be at the root of every JSON:API request and response
-containing data. This object defines a document's "top level".
+document containing data. This object defines a document's "top level".
 
 A document **MUST** contain at least one of the following top-level members:
 
@@ -130,11 +309,12 @@ If a document does not contain a top-level `data` key, the `included` member
 
 The top-level [links object][links] **MAY** contain the following members:
 
-* `self`: the [link][links] that generated the current response document.
+* `self`: the [link][links] that generated the current response document. If a
+  document has extensions or profiles applied to it, this link **SHOULD** be
+  represented by a [link object] with the `type` target attribute specifying the
+  JSON:API media type with all applicable parameters.
 * `related`: a [related resource link] when the primary data represents a
   resource relationship.
-* `profile`: an array of [links][link], each specifying a [profile][profiles]
-  in use in the document.
 * `describedby`: a [link] to a description document (e.g. OpenAPI or JSON
   Schema) for the current document.
 * [pagination] links for the primary data.
@@ -191,8 +371,10 @@ A resource object **MUST** contain at least the following top-level members:
 * `id`
 * `type`
 
-Exception: The `id` member is not required when the resource object originates at
-the client and represents a new resource to be created on the server.
+Exception: The `id` member is not required when the resource object originates
+at the client and represents a new resource to be created on the server. In that
+case, a client **MAY** include a `lid` member to uniquely identify the resource
+by `type` _locally_ within the document.
 
 In addition, a resource object **MAY** contain any of these top-level members:
 
@@ -228,8 +410,16 @@ Here's how an article (i.e. a resource of type "articles") might appear in a doc
 
 #### <a href="#document-resource-object-identification" id="document-resource-object-identification" class="headerlink"></a> Identification
 
-Every [resource object][resource objects] **MUST** contain an `id` member and a `type` member.
-The values of the `id` and `type` members **MUST** be strings.
+As noted above, every [resource object][resource objects] **MUST** contain a
+`type` member. Every resource object **MUST** also contain an `id` member,
+except when the resource object originates at the client and represents a new
+resource to be created on the server. If `id` is omitted due to this exception,
+a `lid` member **MAY** be included to uniquely identify the resource by `type`
+_locally_ within the document. The value of the `lid` member **MUST** be
+identical for every representation of the resource in the document, including
+[resource identifier objects][resource identifier object].
+
+The values of the `id`, `type`, and `lid` members **MUST** be strings.
 
 Within a given API, each resource object's `type` and `id` pair **MUST**
 identify a single, unique resource. (The set of URIs controlled by a server,
@@ -268,9 +458,8 @@ attribute values. However, any object that constitutes or is contained in an
 attribute **MUST NOT** contain a `relationships` or `links` member, as those
 members are reserved by this specification for future use.
 
-Although has-one foreign keys (e.g. `author_id`) are often stored internally
-alongside other information to be represented in a resource object, these keys
-**SHOULD NOT** appear as attributes.
+Keys that reference related resources (e.g. `author_id`) **SHOULD NOT** appear
+as attributes. Instead, [relationships] **SHOULD** be used.
 
 > Note: See [fields] and [member names] for more restrictions on this container.
 
@@ -400,32 +589,32 @@ response that includes the resource as the primary data.
 A "resource identifier object" is an object that identifies an individual
 resource.
 
-A "resource identifier object" **MUST** contain `type` and `id` members.
+A "resource identifier object" **MUST** contain a `type` member. It **MUST**
+also contain an `id` member, except when it represents a new resource to be
+created on the server. In this case, a `lid` member **MUST** be included that
+identifies the new resource.
+
+The values of the `id`, `type`, and `lid` members **MUST** be strings.
 
 A "resource identifier object" **MAY** also include a `meta` member, whose value is a [meta] object that
 contains non-standard meta-information.
 
 ### <a href="#document-compound-documents" id="document-compound-documents" class="headerlink"></a> Compound Documents
 
-To reduce the number of HTTP requests, servers **MAY** allow responses that
-include related resources along with the requested primary resources. Such
-responses are called "compound documents".
+Servers **MAY** allow responses that include related resources along with the
+requested primary resources. Such responses are called "compound documents".
 
 In a compound document, all included resources **MUST** be represented as an
 array of [resource objects] in a top-level `included` member.
 
-Compound documents require "full linkage", meaning that every included
-resource **MUST** be identified by at least one [resource identifier object]
-in the same document. These resource identifier objects could either be
-primary data or represent resource linkage contained within primary or
-included resources.
+Every included resource object **MUST** be identified via a chain of
+relationships originating in a document's primary data. This means that
+compound documents require "full linkage" and that no resource object can be
+included without a direct or indirect relationship to the document's primary
+data.
 
 The only exception to the full linkage requirement is when relationship fields
 that would otherwise contain linkage data are excluded via [sparse fieldsets](#fetching-sparse-fieldsets).
-
-> Note: Full linkage ensures that included resources are related to either
-the primary data (which could be [resource objects] or [resource identifier
-objects][resource identifier object]) or to each other.
 
 A complete example document with multiple included relationships:
 
@@ -510,6 +699,10 @@ each `type` and `id` pair.
 composite key that uniquely references [resource objects] in another part of
 the document.
 
+> Note: For resources that do not contain an `id` member but do contain a `lid`,
+the `lid` is sufficient to establish resource identity and thus linkage between
+resource objects and resource identifier objects throughout the document.
+
 > Note: This approach ensures that a single canonical [resource object][resource objects] is
 returned with each response, even when the same resource is referenced
 multiple times.
@@ -549,42 +742,28 @@ of this member **MUST** be an object (a "links object").
 <a href="#document-links-link" id="document-links-link"></a>
 Within this object, a link **MUST** be represented as either:
 
-* a URI-reference [[RFC3986 Section 4.1](https://tools.ietf.org/html/rfc3986#section-4.1)] to the link's target.
-* <a id="document-links-link-object"></a>an object ("link object") which can
-  contain the following members:
-  * `href`: a URI-reference [[RFC3986 Section 4.1](https://tools.ietf.org/html/rfc3986#section-4.1)] to the link's target.
-  * `rel`: a [link relation type][link relation type] defining the semantics of
-    the link.
-  * `anchor`: a URI-reference [[RFC3986 Section 4.1](https://tools.ietf.org/html/rfc3986#section-4.1)]
-    to the link's context. By default, the context of a link is the
-    [top-level object][top level], [resource object][resource objects], or
-    [relationship object][relationships] in which the link appears.
-  * `params`: a [link parameter object][link parameters] describing additional
-    information about the link or its target.
-  * `describedby`: a [link] to a description document (e.g. OpenAPI or JSON
-    Schema) for the link target.
-  * `meta`: a meta object containing non-standard meta-information about the
-    link.
+* a string whose value is a URI-reference [[RFC3986 Section 4.1](https://tools.ietf.org/html/rfc3986#section-4.1)]
+  pointing to the link's target.
+* a [link object].
 
-Link objects **MAY** also contain the members `hreflang`, `title`, and `type`.
-Each of these members **MUST** be used in accordance with their semantics as
-defined by [RFC8288 Section 3.4.1](https://tools.ietf.org/html/rfc8288#section-3.4.1).
+A link's relation type **SHOULD** be inferred from the name of the link unless the
+link is a [link object] and the link object has a `rel` member.
 
-Except for the `profile` key in the top-level links object and the `type`
-key in an [error object]'s links object, each key present in a links object
-**MUST** have a single link as its value. The aforementioned `profile` and
-`type` keys, if present, **MUST** hold an array of links.
+A link's context is the [top-level object][top level], [resource
+object][resource objects], or [relationship object][relationships] in which it
+appears.
 
-In the example below, the `self` link is simply a URI string, whereas the
-`related` link uses the object form to provide meta information about a
-related resource collection as well as a schema that serves as a description
-document for that collection:
+In the example below, the `self` link is a string whereas the `related` link is
+a [link object]. The `related` link object provides additional information
+about the targeted related resource collection as well as a schema that serves
+as a description document for that collection:
 
 ```json
 "links": {
   "self": "http://example.com/articles/1/relationships/comments",
   "related": {
     "href": "http://example.com/articles/1/comments",
+    "title": "Comments",
     "describedby": "http://example.com/schemas/article-comments",
     "meta": {
       "count": 10
@@ -593,66 +772,35 @@ document for that collection:
 }
 ```
 
-##### <a href="#document-links-link-relation-type" id="document-links-link-relation-type" class="headerlink"></a> Link relation type
+#### <a id="document-links-link-object"></a> Link objects
 
-The value of the `rel` member **MUST** be a string or an array of strings that
-represent link relation type(s). Valid link relation types are defined by
-[RFC8288 Section 2.1](https://tools.ietf.org/html/rfc8288#section-2.1).
+A "link object" is an object that represents a [web link](https://tools.ietf.org/html/rfc8288).
 
-If a link is represented as a string, or the `rel` member is not given on a
-link object, the link's relation type **SHOULD** be inferred from the name of
-the link object.
+A link object **MUST** contain the following member:
 
-An array of link relationship types establishes multiple links that share the
-same context, target, and target attributes and a client **MUST** treat these
-links as separate, distinct links. A client **MUST NOT** infer additional
-semantics for the link based on a composition of link relation types alone.
+* `href`: a string whose value is a URI-reference [[RFC3986 Section 4.1](https://tools.ietf.org/html/rfc3986#section-4.1)]
+  pointing to the link's target.
 
-In order to represent a link with reversed semantics, it is **RECOMMENDED**
-that an alternate link relation type be used or, less preferably, that the
-`anchor` and `href` members be interchanged.
+A link object **MAY** also contain any of the following members:
 
-> Note: Historically, a `rev` link parameter was used for this purpose but has
-> since been deprecated by [RFC8288 Section 3.3](https://tools.ietf.org/html/rfc8288#section-3.3).
+* `rel`: a string indicating the link's relation type. The string **MUST** be a
+  [valid link relation type](https://tools.ietf.org/html/rfc8288#section-2.1).
+* `describedby`: a [link] to a description document (e.g. OpenAPI or JSON
+  Schema) for the link target.
+* `title`: a string which serves as a label for the destination of a link
+  such that it can be used as a human-readable identifier (e.g., a menu
+  entry).
+* `type`: a string indicating the media type of the link's target.
+* `hreflang`: a string or an array of strings indicating the language(s) of the
+  link's target. An array of strings indicates that the link's target is
+  available in multiple languages. Each string **MUST** be a valid language tag
+  [[RFC5646](https://tools.ietf.org/html/rfc5646)].
+* `meta`: a meta object containing non-standard meta-information about the
+  link.
 
-##### <a href="#document-links-link-parameters" id="document-links-link-parameters" class="headerlink"></a> Link parameters
-
-The value of the `params` member **MUST** be an object (a “link parameter
-object”). Members of the link parameter object (“link parameters”) describe
-the [link][link] on which they are defined or its target. These link parameters
-are also known as [target attributes](https://tools.ietf.org/html/rfc8288#section-2.2).
-
-Link parameter names **MUST** be defined by their accompanying link relation
-type. Additionally, parameter names **SHOULD** be valid JSON:API
-[member names][member names] and **MUST** be valid target attribute names as defined
-by [RFC8288 Section 2.2](https://tools.ietf.org/html/rfc8288#section-2.2).
-
-Link parameters **MAY** contain any valid JSON value. However, parameters that
-have a cardinality greater than one **MUST** be represented as an array of
-values.
-
-> Note: This means that a target attribute with multiple string values should
-not be represented as a single concatenated string with its values separated by
-whitespace as might be the case in a [`Link` header serialization](https://tools.ietf.org/html/rfc8288#section-3.5).
-
-#### <a href="#profile-links" id="profile-links" class="headerlink"></a> Profile Links
-
-Like all [links][link], a link in an array of `profile` links can be represented
-with a [link object].
-
-Here, the `profile` key specifies an array of `profile` links:
-
-```json
-"links": {
-  "profile": [
-    "http://example.com/profiles/flexible-pagination",
-    "http://example.com/profiles/resource-versioning"
-  ]
-}
-```
-
-> Note: Additional link types, similar to `profile` links, may be specified in
-the future.
+> Note: the `type` and `hreflang` members are only hints; the target resource
+> is not guaranteed to be available in the indicated media type or language
+> when the link is actually followed.
 
 ### <a href="#document-jsonapi-object" id="document-jsonapi-object" class="headerlink"></a> JSON:API Object
 
@@ -664,6 +812,8 @@ The jsonapi object **MAY** contain any of the following members:
 
 * `version` - whose value is a string indicating the highest JSON:API version
   supported.
+* `ext` - an array of URIs for all applied [extensions].
+* `profile` - an array of URIs for all applied [profiles].
 * `meta` - a [meta] object that contains non-standard meta-information.
 
 A simple example appears below:
@@ -671,7 +821,14 @@ A simple example appears below:
 ```json
 {
   "jsonapi": {
-    "version": "1.1"
+    "version": "1.1",
+    "ext": [
+      "https://jsonapi.org/ext/atomic"
+    ],
+    "profile": [
+      "http://example.com/profiles/flexible-pagination",
+      "http://example.com/profiles/resource-versioning"
+    ]
   }
 }
 ```
@@ -684,8 +841,9 @@ version string primarily indicates which new features a server may support.
 
 ### <a href="#document-member-names" id="document-member-names" class="headerlink"></a> Member Names
 
-All member names used in a JSON:API document **MUST** be treated as case sensitive
-by clients and servers, and they **MUST** meet all of the following conditions:
+Implementation and profile defined member names used in a JSON:API document
+**MUST** be treated as case sensitive by clients and servers, and they **MUST**
+meet all of the following conditions:
 
 - Member names **MUST** contain at least one character.
 - Member names **MUST** contain only the allowed characters listed below.
@@ -713,7 +871,8 @@ first or last character:
 
 #### <a href="#document-member-names-reserved-characters" id="document-member-names-reserved-characters" class="headerlink"></a> Reserved Characters
 
-The following characters **MUST NOT** be used in member names:
+The following characters **MUST NOT** be used in implementation and
+[profile][profiles] defined member names:
 
 - U+002B PLUS SIGN, "+" _(has overloaded meaning in URL query strings)_
 - U+002C COMMA, "," _(used as a separator between relationship paths)_
@@ -767,6 +926,13 @@ object is not an attribute.
 > Note: Among other things, "@" members can be used to add JSON-LD data to a
 JSON:API document. Such documents should be served with [an extra header](http://www.w3.org/TR/json-ld/#interpreting-json-as-json-ld)
 to convey to JSON-LD clients that they contain JSON-LD data.
+
+#### <a href="#extension-members" id="extension-members" class="headerlink"></a> Extension Members
+
+The name of every new member introduced by an extension **MUST** be prefixed
+with the [extension's namespace](#extension-rules) followed by a colon (`:`).
+The remainder of the name **MUST** adhere to the rules for implementation
+defined [member names].
 
 ## <a href="#fetching" id="fetching" class="headerlink"></a> Fetching Data
 
@@ -1067,7 +1233,8 @@ section of the [compound document].
 
 The value of the `include` parameter **MUST** be a comma-separated (U+002C
 COMMA, ",") list of relationship paths. A relationship path is a dot-separated
-(U+002E FULL-STOP, ".") list of [relationship][relationships] names.
+(U+002E FULL-STOP, ".") list of [relationship][relationships] names. An empty
+value indicates that no related resources should be returned.
 
 If a server is unable to identify a relationship path or does not support
 inclusion of resources from a path, it **MUST** respond with 400 Bad Request.
@@ -1135,10 +1302,15 @@ response on a per-type basis by including a `fields[TYPE]` query parameter.
 
 The value of any `fields[TYPE]` parameter **MUST** be a comma-separated (U+002C
 COMMA, ",") list that refers to the name(s) of the fields to be returned.
+An empty value indicates that no fields should be returned.
 
 If a client requests a restricted set of [fields] for a given resource type,
 an endpoint **MUST NOT** include additional [fields] in resource objects of
 that type in its response.
+
+If a client does not specify the set of [fields] for a given resource type, the
+server **MAY** send all fields, a subset of fields, or no fields for that
+resource type.
 
 ```http
 GET /articles?include=author&fields[articles]=title,body&fields[people]=name HTTP/1.1
@@ -1688,7 +1860,7 @@ is an empty array or an array of [resource identifier objects][resource identifi
 If a client makes a `PATCH` request to a URL from a to-many
 [relationship link][relationships], the server **MUST** either completely
 replace every member of the relationship, return an appropriate error response
-if some resources can not be found or accessed, or return a `403 Forbidden`
+if some resources cannot be found or accessed, or return a `403 Forbidden`
 response if complete replacement is not allowed by the server.
 
 For example, the following request replaces every tag for an article:
@@ -1872,7 +2044,8 @@ responses, in accordance with
 
 ## <a href="#query-parameters" id="query-parameters" class="headerlink"></a> Query Parameters
 
-### <a href="#query-parameters-families" id="query-parameters-families" class="headerlink"></a>  Query Parameter Families
+### <a href="#query-parameters-families" id="query-parameters-families" class="headerlink"></a> Query Parameter Families
+
 Although "query parameter" is a common term in everyday web development, it is
 not a well-standardized concept. Therefore, JSON:API provides its own
 [definition of a query parameter](#appendix-query-details).
@@ -1896,7 +2069,7 @@ family.
 
 A "query parameter family" is the set of all query parameters whose name starts
 with a "base name", followed by zero or more instances of empty square brackets
-(i.e. `[]`) or square-bracketed legal member names. The family is referred to
+(i.e. `[]`) or square-bracketed legal [member names]. The family is referred to
 by its base name.
 
 For example, the `filter` query parameter family includes parameters named:
@@ -1904,7 +2077,15 @@ For example, the `filter` query parameter family includes parameters named:
 etc. However, `filter[_]` is not a valid parameter name in the family, because
 `_` is not a valid [member name][member names].
 
-### <a href="#query-parameters-custom" id="query-parameters-custom" class="headerlink"></a>   Implementation-Specific Query Parameters
+### <a href="#extension-query-parameters" id="extension-query-parameters" class="headerlink"></a> Extension-Specific Query Parameters
+
+The base name of every query parameter introduced by an extension **MUST** be
+prefixed with the extension's namespace followed by a colon (`:`). The
+remainder of the base name **MUST** contain only the characters \[a-z\] (U+0061
+to U+007A, "a-z").
+
+### <a href="#query-parameters-custom" id="query-parameters-custom" class="headerlink"></a> Implementation-Specific Query Parameters
+
 Implementations **MAY** support custom query parameters. However, the names of
 these query parameters **MUST** come from a [family][query parameter family]
 whose base name is a legal [member name][member names] and also contains at least
@@ -1920,102 +2101,6 @@ parameter from this specification, it **MUST** return `400 Bad Request`.
 > Note: By forbidding the use of query parameters that contain only the characters
 > \[a-z\], JSON:API is reserving the ability to standardize additional query
 > parameters later without conflicting with existing implementations.
-
-## <a href="#extensions" id="extensions" class="headerlink"></a> Extensions
-
-JSON:API supports the use of "extensions" as a way to indicate additional
-semantics that extend the basic semantics described in this specification.
-
-An extension is a separate specification defining these extended semantics.
-
-An exenstion **MAY** impose additional processing rules or further restrictions
-and it **MAY** define new object members as described below.
-
-An extension **MUST NOT** lessen or remove any processing rules, restrictions or
-object member requirements defined in this specification or other extensions.
-
-### <a href="#extension-members" id="extension-members" class="headerlink"></a> Extending Document Structure
-
-An extension **MAY** define new members within the document structure defined by
-this specification. The name of every new member introduced by an extension
-**MUST** be prefixed with an extension namespace followed by a colon (`:`). The
-namespace **MUST** be identical for every member introduced by a particular
-extension.
-
-Namespaces guarantee that extensions will never conflict with the current or
-future versions of this specification.
-
-In the following example, an extension requiring that each request document
-contains a unique request ID has been applied. It uses the namespace `request`
-and adds a top-level object member named `request:id`:
-
-```
-{
-  "request:id": "some-long-uuid",
-  "data": {
-    "type": "comments",
-  }
-}
-```
-
-## <a href="#profiles" id="profiles" class="headerlink"></a> Profiles
-
-JSON:API supports the use of "profiles" as a way to indicate additional
-semantics that apply to a JSON:API document, without altering the basic
-semantics described in this specification.
-
-A profile is a separate specification defining these additional semantics.
-
-[RFC 6906](https://tools.ietf.org/html/rfc6906) covers the nature of profile
-identification:
-
-> Profiles are identified by URI... The presence of a specific URI has to be
-  sufficient for a client to assert that a resource representation conforms to
-  a profile [regardless of any content that may or may not be available at that
-  URI].
-
-However, to aid human understanding, visiting a profile's URI **SHOULD** return
-documentation of the profile.
-
-### <a href="#profile-media-type-parameter" id="profile-media-type-parameter" class="headerlink"></a> `profile` Media Type Parameter
-
-The `profile` media type parameter is used to describe the application of
-one or more profiles to a JSON:API document. The value of the `profile`
-parameter **MUST** equal a space-separated (U+0020 SPACE, " ") list of profile
-URIs.
-
-> Note: When serializing the `profile` media type parameter, the HTTP
-> specification requires that its value be surrounded by quotation marks
-> (U+0022 QUOTATION MARK, "\"") if it contains more than one URI.
-
-A client **MAY** use the `profile` media type parameter in an `Accept` header
-to request that the server apply one or more profiles to the response document.
-When such a request is received, a server **SHOULD** attempt to apply the
-requested profile(s) to its response.
-
-For example, in the following request, the client asks that the server apply
-the `http://example.com/last-modified` profile and the
-`http://example.com/timestamps` profile, if it is able to.
-
-```http
-GET /articles/1 HTTP/1.1
-Accept: application/vnd.api+json; profile="http://example.com/last-modified http://example.com/timestamps"
-```
-
-Servers **MAY** respond with a subset of the requested profiles applied or none
-of the requested profiles applied. Additionally, servers **MAY** respond with
-unrequested profiles applied.
-
-#### <a href="#profiles-sending" id="profiles-sending" class="headerlink"></a> Sending Profiled Documents
-
-Clients and servers **MUST** include the `profile` media type parameter in
-conjunction with the JSON:API media type in a `Content-Type` header when they
-have applied one or more profiles to a JSON:API document.
-
-Likewise, clients and servers applying profiles to a JSON:API document **MUST**
-include a [top-level][top level] [`links` object][links] with a `profile` key,
-and that `profile` key **MUST** include a [link] to the URI of each profile
-that has been applied.
 
 ## <a href="#errors" id="errors" class="headerlink"></a> Errors
 
@@ -2037,26 +2122,27 @@ Error objects provide additional information about problems encountered while
 performing an operation. Error objects **MUST** be returned as an array
 keyed by `errors` in the top level of a JSON:API document.
 
-An error object **MAY** have the following members:
+An error object **MAY** have the following members, and **MUST** contain at
+least one of:
 
 * `id`: a unique identifier for this particular occurrence of the problem.
-* `links`: a [links object][links] containing the following members:
+* `links`: a [links object][links] that **MAY** contain the following members:
   * `about`: a [link][link] that leads to further details about this
     particular occurrence of the problem. When derefenced, this URI **SHOULD**
     return a human-readable description of the error.
-  * `type`: an array of [links][link] that identify the type of error
-    that this particular error is an instance of. This URI **SHOULD** be
-    dereferencable to a human-readable explanation of the general error.
+  * `type`: a [link][link] that identifies the type of error that this
+    particular error is an instance of. This URI **SHOULD** be dereferencable to
+    a human-readable explanation of the general error.
 * `status`: the HTTP status code applicable to this problem, expressed as a
-  string value.
+  string value.  This **SHOULD** be provided.
 * `code`: an application-specific error code, expressed as a string value.
 * `title`: a short, human-readable summary of the problem that **SHOULD NOT**
   change from occurrence to occurrence of the problem, except for purposes of
   localization.
 * `detail`: a human-readable explanation specific to this occurrence of the
   problem. Like `title`, this field's value can be localized.
-* `source`: an object containing references to the source of the error,
-  optionally including any of the following members:
+* `source`: an object containing references to the primary source of the error.
+  It **SHOULD** include one of the following members or be omitted:
   * `pointer`: a JSON Pointer [[RFC6901](https://tools.ietf.org/html/rfc6901)]
     to the value in the request document that caused the error [e.g. `"/data"`
     for a primary data object, or `"/data/attributes/title"` for a specific
@@ -2064,6 +2150,8 @@ An error object **MAY** have the following members:
     exists; if it doesn't, the client **SHOULD** simply ignore the pointer.
   * `parameter`: a string indicating which URI query parameter caused
     the error.
+  * `header`: a string indicating the name of a single request header which
+    caused the error.
 * `meta`: a [meta object][meta] containing non-standard meta-information about the
   error.
 
@@ -2112,6 +2200,7 @@ accept requests in which these square brackets are left unencoded in a query
 parameter's name. If a server does accept these requests, it **MUST** treat the
 request as equivalent to one in which the square brackets were percent-encoded.
 
+[semantics]: #semantics
 [top level]: #document-top-level
 [resource objects]: #document-resource-objects
 [attributes]: #document-resource-object-attributes
@@ -2127,7 +2216,6 @@ request as equivalent to one in which the square brackets were percent-encoded.
 [link]: #document-links-link
 [link object]: #document-links-link-object
 [link relation type]: #document-links-link-relation-type
-[link parameters]: #document-links-link-parameters
 [extensions]: #extensions
 [profiles]: #profiles
 [error details]: #errors
